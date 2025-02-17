@@ -1,0 +1,43 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.studentsattendence"> <!-- Ensure this is your correct package name -->
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:required="false"/>
+
+    <!-- Telephony hardware feature -->
+    <uses-feature android:name="android.hardware.telephony" android:required="true" />
+
+    <!-- Application Configuration -->
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.StudentsAttendence"
+        tools:targetApi="31">
+
+        <!-- Main Activity (Login) -->
+        <activity android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Add your other activities here -->
+        <activity android:name=".SignInActivity" android:exported="true" />
+        <activity android:name=".AdminsActivity" android:exported="false" /> <!-- Exported false because you don't want to launch it directly -->
+
+        <!-- Add any other activities you have -->
+
+    </application>
+
+</manifest>
