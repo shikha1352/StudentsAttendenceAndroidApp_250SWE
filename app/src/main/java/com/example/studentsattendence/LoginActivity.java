@@ -74,16 +74,27 @@ public class LoginActivity extends AppCompatActivity {
         signupRedirectText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+<<<<<<< HEAD
                 startActivity(new Intent(LoginActivity.this, AdminsActivity.class));
+=======
+                startActivity(new Intent(LoginActivity.this, SignInActivity.class));
+>>>>>>> 721a72524146f7b61489dd93bafbf76638708844
             }
 
         });
     }
 
     private void launchMainActivity() {
+<<<<<<< HEAD
         Intent intent = new Intent(LoginActivity.this,MainActivity.class);
         startActivity(intent);
         finish(); // Close LoginActivity
     }
 
+=======
+        Intent intent = new Intent(LoginActivity.this, AdminsActivity.class);
+        startActivity(intent);
+        finish(); // Optional: finish LoginActivity to prevent going back to it
+    }
+>>>>>>> 721a72524146f7b61489dd93bafbf76638708844
 }

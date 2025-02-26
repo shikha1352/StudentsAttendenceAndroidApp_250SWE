@@ -1,10 +1,14 @@
 package com.example.studentsattendence;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -14,19 +18,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+public class TeachersActivity extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity {
-    private String userID;
+    public void createCLass(View view){
 
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        setContentView(R.layout.activity_teachers);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        FirebaseDatabase database  = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
-        userID = null;
+        FirebaseDatabase database  = FirebaseDatabase.getInstance("https://attendme-644ac-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        String userID = null;
         if (firebaseUser != null) {
             userID = firebaseUser.getUid();
             System.out.println(userID);
@@ -36,17 +40,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    String role = dataSnapshot.child("role").getValue(String.class);
-                    if(role.equals("admin")){
-                        startAdminActivity();
-                    }
-                    if (role != null) {
-                        Log.d("User Role", role);
-                    } else {
-                        Log.d("User Role", "Role not found.");
-                    }
-                } else {
-                    Log.d("User Role", "User not found.");
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    TextView textView = findViewById(R.id.textView);
+                    textView.setText("Welcome! " + name );
                 }
             }
 
@@ -56,17 +52,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 721a72524146f7b61489dd93bafbf76638708844
-    private void startAdminActivity() {
-        Intent intent = new Intent(this, AdminsActivity.class);
-        startActivity(intent);
-
-    }
-
-
 }
