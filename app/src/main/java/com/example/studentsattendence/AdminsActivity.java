@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,48 +29,45 @@ public class AdminsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admins);
+
+        textView = findViewById(R.id.textView);
+
         CardView createClass = findViewById(R.id.create_class_card);
         createClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Show a Toast message
-                Toast.makeText(v.getContext(), "Class Created!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminsActivity.this, "Create Class button clicked!", Toast.LENGTH_SHORT).show();
+
+                // Start a new activity (if needed, ensure it's the correct one)
+                Intent intent = new Intent(AdminsActivity.this, AdminsActivity.class);
+                startActivity(intent);
             }
         });
 
-        // Initialize Firebase Auth
+
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
 
-        // If no user is logged in, redirect to LoginActivity
         if (firebaseUser == null) {
-            startActivity(new Intent(AdminsActivity.this, LoginActivity.class));
-            finish();
+            Toast.makeText(AdminsActivity.this, "User not logged in!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Find Welcome TextView (Ensure ID Matches XML)
-        textView = findViewById(R.id.textView);
+        String userID = firebaseUser.getUid();
+        Log.d("UserID", userID);
 
-        // Firebase Database Reference
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
-        myRef = database.getReference("users").child(firebaseUser.getUid());
+        myRef = database.getReference("users").child(userID);
 
-        // Fetch and Display Admin Name
-        fetchUserName();
-    }
-
-    private void fetchUserName() {
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue(String.class);
-                    if (name != null && !name.isEmpty()) {
-                        textView.setText("Welcome! " + name);
-                    } else {
-                        textView.setText("Welcome! Admin");
-                    }
+                    textView.setText("Welcome! " + name);
+                } else {
+                    textView.setText("User not found.");
                 }
             }
 

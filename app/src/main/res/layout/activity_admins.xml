@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#17e682"
-    >
-
+    tools:context=".AdminsActivity">
 
     <View
         android:id="@+id/top_view"
@@ -34,20 +33,17 @@
                 android:id="@+id/create_class_card"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                app:cardBackgroundColor="@android:color/white"
                 android:layout_row="0"
-                android:layout_rowWeight="1"
                 android:layout_column="0"
-                android:layout_columnWeight="1"
                 android:layout_margin="12dp"
-
                 app:cardCornerRadius="15dp"
                 app:cardElevation="12dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="40dp"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageView
@@ -68,6 +64,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
         </GridLayout>
     </ScrollView>
     <TextView

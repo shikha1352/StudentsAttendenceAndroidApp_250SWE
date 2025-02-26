@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        FirebaseDatabase database  = FirebaseDatabase.getInstance("https://attendme-644ac-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        FirebaseDatabase database  = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
         userID = null;
         if (firebaseUser != null) {
             userID = firebaseUser.getUid();
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
     private void startAdminActivity() {
