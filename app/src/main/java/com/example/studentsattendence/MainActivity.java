@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
                     String role = dataSnapshot.child("role").getValue(String.class);
                     if(role.equals("admin")){
                         startAdminActivity();
+                    }else if(role.equals("teacher")){
+                        startTeacherActivity();
                     }
                     if (role != null) {
                         Log.d("User Role", role);
@@ -63,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AdminsActivity.class);
         startActivity(intent);
 
+    }
+    private void startTeacherActivity() {
+        Intent intent = new Intent(this, TeachersActivity.class);
+        startActivity(intent);
     }
 
 

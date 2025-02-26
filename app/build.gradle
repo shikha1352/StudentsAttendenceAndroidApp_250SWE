@@ -6,13 +6,13 @@ plugins {
 android {
     namespace 'com.example.studentsattendence'  // Correct namespace
     compileSdk 34  // Keep your compile SDK up to date
+
     defaultConfig {
         applicationId "com.example.studentsattendence"  // Application ID
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,7 +28,6 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
-
 
 dependencies {
     implementation libs.appcompat  // Ensure this references the correct version
