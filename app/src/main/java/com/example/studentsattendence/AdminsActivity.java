@@ -33,15 +33,60 @@ public class AdminsActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
 
         CardView createClass = findViewById(R.id.create_class_card);
+        CardView removeStudent = findViewById(R.id.remove_std);
+        CardView addTeachers = findViewById(R.id.addTeachers);
+        CardView addStudents = findViewById(R.id.addStudents);
+        CardView approveAddStudents = findViewById(R.id.approveAddStd);
+        CardView approveRemoveStudents = findViewById(R.id.approveRemoveStd);
+        addTeachers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AdminsActivity.this, "addTeachers button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), AddTeacherActivity.class);
+                v.getContext().startActivity(intent);
+
+            }
+        });
         createClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Show a Toast message
-                Toast.makeText(AdminsActivity.this, "Create Class button clicked!", Toast.LENGTH_SHORT).show();
-
-                // Start a new activity (if needed, ensure it's the correct one)
-                Intent intent = new Intent(AdminsActivity.this, AdminsActivity.class);
+                Intent intent = new Intent(AdminsActivity.this, CreateClassActivity.class);
                 startActivity(intent);
+            }
+        });
+        removeStudent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AdminsActivity.this, "remove student button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), AdminsActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
+
+        addStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AdminsActivity.this, "add student button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), AddStudentActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
+
+        approveAddStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AdminsActivity.this, "approve add student button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), AdminsActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
+
+        approveRemoveStudents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AdminsActivity.this, "approve remove student button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), AdminsActivity.class);
+                v.getContext().startActivity(intent);
             }
         });
 

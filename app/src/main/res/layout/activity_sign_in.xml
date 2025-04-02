@@ -9,6 +9,7 @@
     android:layout_gravity="center"
     android:orientation="vertical"
     android:padding="15dp"
+    android:background="#FFFFFF"
     tools:context=".SignInActivity">
 
 
@@ -40,6 +41,7 @@
         android:textColor="@color/black"
         android:topLeftRadius="15dp"
         android:topRightRadius="15dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +78,7 @@
         android:layout_marginTop="32dp"
         android:backgroundTint="@color/lightGreen"
         android:gravity="center"
-        android:text="Sign in"
+        android:text="Sign up"
         android:textSize="18sp"
         app:circularflow_radiusInDP="20dp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -20,15 +20,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class TeachersActivity extends AppCompatActivity {
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference myRef;
+    private TextView textView;
 
-    public void createCLass(View view){
 
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teachers);
 
+        textView = findViewById(R.id.textView);
         CardView enrollStudent = findViewById(R.id.enrollStudents);
         CardView markAttendance = findViewById(R.id.markAttendance);
         CardView removeStudent= findViewById(R.id.removeStudent);
@@ -60,22 +63,24 @@ public class TeachersActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        FirebaseDatabase database  = FirebaseDatabase.getInstance("https://attendme-644ac-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        FirebaseDatabase database  = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
         String userID = null;
         if (firebaseUser != null) {
             userID = firebaseUser.getUid();
             System.out.println(userID);
         }
-        DatabaseReference myRef = database.getReference("users").child(userID);
+        myRef = database.getReference("users").child(userID);
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue(String.class);
-                    TextView textView = findViewById(R.id.textView);
                     textView.setText("Welcome! " + name );
+                }
+                else {
+                    textView.setText("User not found.");
                 }
             }
 

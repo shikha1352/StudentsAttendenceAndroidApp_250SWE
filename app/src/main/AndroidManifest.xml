@@ -28,11 +28,11 @@
         <activity android:name=".SignInActivity" android:exported="false" />
         <activity android:name=".AdminsActivity" android:exported="false" />
         <activity android:name=".TeachersActivity" android:exported="false" />
-
-        <activity android:name=".CreateClassActivity" android:exported="false" />
-
-
+        <activity android:name=".CreateClassActivity" android:exported="true"/>
+        <activity android:name=".AddTeacherActivity" android:exported="true"/>
+        <activity android:name=".AddStudentActivity" android:exported="true"/>
         <activity android:name=".LoginActivity" android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

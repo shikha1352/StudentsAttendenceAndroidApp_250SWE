@@ -52,11 +52,11 @@ public class SignInActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()){
-                                Toast.makeText(SignInActivity.this,"Signin Successful",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this,"Signup Successful",Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignInActivity.this,LoginActivity.class));
                             }
                             else {
-                                Toast.makeText(SignInActivity.this,"Signin Failed"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignInActivity.this,"Signup Failed"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

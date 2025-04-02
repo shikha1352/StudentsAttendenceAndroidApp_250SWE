@@ -33,6 +33,7 @@
             android:layout_columnWeight="1"
             android:layout_margin="12dp"
             app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@android:color/white"
             app:cardElevation="12dp">
 
             <LinearLayout
@@ -71,6 +72,7 @@
             android:layout_columnWeight="1"
             android:layout_margin="12dp"
             app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@android:color/white"
             app:cardElevation="12dp">
 
             <LinearLayout
@@ -109,6 +111,7 @@
             android:layout_columnWeight="1"
             android:layout_margin="12dp"
             app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@android:color/white"
             app:cardElevation="12dp">
 
             <LinearLayout
