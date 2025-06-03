@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 public class TeachersActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -39,8 +40,8 @@ public class TeachersActivity extends AppCompatActivity {
         enrollStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(TeachersActivity.this, "Enroll Student button clicked!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(), TeachersActivity.class);
+                Toast.makeText(TeachersActivity.this, "Mark Attendence button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), EnrolStudentActivity.class);
                 v.getContext().startActivity(intent);
             }
         });
@@ -57,8 +58,8 @@ public class TeachersActivity extends AppCompatActivity {
         removeStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(TeachersActivity.this, "remove student button clicked!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(), TeachersActivity.class);
+                //Toast.makeText(TeachersActivity.this, "remove student button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), CreateClassActivity.class);
                 v.getContext().startActivity(intent);
             }
         });
