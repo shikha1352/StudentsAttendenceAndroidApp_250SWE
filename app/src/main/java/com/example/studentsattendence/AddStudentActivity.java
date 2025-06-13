@@ -235,6 +235,8 @@ public class AddStudentActivity extends AppCompatActivity {
         studentData.put("studentID", studentId);
         studentData.put("currentStudent", true);
         studentData.put("assigned", false);
+        studentData.put("approve", false);
+        studentData.put("grade", "");
 
         if (imageUri != null) {
             // Upload the image to Firebase Storage and get the download URL

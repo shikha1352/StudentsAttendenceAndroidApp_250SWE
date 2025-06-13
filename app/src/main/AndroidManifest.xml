@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <!-- Telephony hardware feature -->
     <uses-feature android:name="android.hardware.telephony" android:required="true" />
@@ -32,6 +34,11 @@
         <activity android:name=".AddTeacherActivity" android:exported="true"/>
         <activity android:name=".AddStudentActivity" android:exported="true"/>
         <activity android:name=".EnrolStudentActivity" android:exported="true" />
+        <activity android:name=".AddApproveStudentActivityAdmin" android:exported="true" />
+        <activity android:name=".MarkAttendenceActivity" android:exported="true" />
+        <activity android:name=".RemoveStudentActivityTeacher" android:exported="true" />
+        <activity android:name=".RemoveStudentActivityAdmin" android:exported="true" />
+
 
         <activity android:name=".LoginActivity" android:exported="true">
 
@@ -40,7 +47,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

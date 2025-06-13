@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class EnrolStudentActivity extends AppCompatActivity {
+public class RemoveStudentActivityAdmin extends AppCompatActivity {
 
     private CustomAdapter adapter;
     private ArrayList<Student> studentList = new ArrayList<>();
@@ -28,11 +28,12 @@ public class EnrolStudentActivity extends AppCompatActivity {
     private Spinner spinner;
     private ArrayList<String> gradeList = new ArrayList<>();
     private DatabaseReference database;
+    private Button btnRemove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enroll_student);
+        setContentView(R.layout.activity_remove_student);
 
         listView = findViewById(R.id.listView);
         spinner = findViewById(R.id.spinner_grade);
@@ -42,11 +43,12 @@ public class EnrolStudentActivity extends AppCompatActivity {
 
         adapter = new CustomAdapter(this, studentList);
         listView.setAdapter(adapter);
-        Button btnAdd = findViewById(R.id.btnRemove);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
+
+        btnRemove = findViewById(R.id.btnRemove);
+        btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                add(v); // call your existing method
+                removeStudents(v);
             }
         });
 
@@ -66,7 +68,7 @@ public class EnrolStudentActivity extends AppCompatActivity {
                     }
                 }
 
-                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(EnrolStudentActivity.this,
+                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(RemoveStudentActivityAdmin.this,
                         android.R.layout.simple_spinner_item, gradeList);
                 gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(gradeAdapter);
@@ -97,22 +99,17 @@ public class EnrolStudentActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 studentList.clear();
-                Log.d("FirebaseDebug", "Snapshot children count: " + snapshot.getChildrenCount());
                 for (DataSnapshot child : snapshot.getChildren()) {
                     String stdGrade = child.child("grade").getValue(String.class);
+                    Boolean currentStudent = child.child("currentStudent").getValue(Boolean.class);
                     Boolean assigned = child.child("assigned").getValue(Boolean.class);
                     String name = child.child("name").getValue(String.class);
                     String id = child.child("studentID").getValue(String.class);
 
-                    System.out.println("Student: " + name + ", Grade: " + stdGrade + ", Assigned: " + assigned);
-
-                    if (stdGrade != null && stdGrade.equals(grade) &&
-                            (assigned == null || !assigned)) {
-                        studentList.add(new Student(name, false, id));
+                    if(currentStudent && assigned != null && assigned == false && grade.equals(spinner.getSelectedItem().toString())){
+                        studentList.add(new Student(name,assigned,id));
                     }
                 }
-
-                System.out.println("Students found for grade: " + grade + ", Count: " + studentList.size());
 
                 adapter.notifyDataSetChanged();
             }
@@ -124,15 +121,16 @@ public class EnrolStudentActivity extends AppCompatActivity {
         });
     }
 
-
-    public void add(View view) {
+    public void removeStudents(View view) {
         ArrayList<String> selectedIDs = adapter.getCheckedIDs();
         String selectedGrade = spinner.getSelectedItem().toString();
 
         for (String id : selectedIDs) {
-            database.child("students").child(id).child("assigned").setValue(true);
-            database.child("students").child(id).child("approved").setValue(false);
+            database.child("students").child(id).child("currentStudent").setValue(false);
+            database.child("students").child(id).child("assigned").setValue(false);
+            database.child("students").child(id).child("approved").setValue(true);
         }
+
         loadStudentsByGrade(selectedGrade);
     }
 }
