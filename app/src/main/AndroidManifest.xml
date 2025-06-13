@@ -32,6 +32,7 @@
         <activity android:name=".AddTeacherActivity" android:exported="true"/>
         <activity android:name=".AddStudentActivity" android:exported="true"/>
         <activity android:name=".EnrolStudentActivity" android:exported="true" />
+        <activity android:name=".AddApproveStudentActivityAdmin" android:exported="true" />
 
         <activity android:name=".LoginActivity" android:exported="true">
 

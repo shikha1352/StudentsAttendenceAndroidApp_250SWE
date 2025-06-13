@@ -1,12 +1,11 @@
 package com.example.studentsattendence;
 
-import static android.content.ContentValues.TAG;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -17,140 +16,123 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class EnrolStudentActivity extends AppCompatActivity {
 
-    CustomAdapter adapter;
-    ArrayList<Student> studentToDisplay = new ArrayList<>();
-    ListView listView;
-    DatabaseReference reference;
-    ArrayList<String> checkedIDs;
-    ArrayList<String> gradeList;
-
-
-    public void add(View view){
-        checkedIDs = adapter.getCheckedIDs();
-        Spinner spinner = findViewById(R.id.spinner_grade);
-        String selectedGrade = spinner.getSelectedItem().toString();
-
-        DatabaseReference studentsRef = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/").getReference("students");
-
-        for (String stdID : checkedIDs) {
-            Query query = studentsRef.orderByChild("studentID").equalTo(stdID);
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        DatabaseReference studentRef = childSnapshot.getRef();
-                        studentRef.child("grade").setValue(selectedGrade);
-                        studentRef.child("assigned").setValue(true);
-                        studentRef.child("approved").setValue(false);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(TAG, "Failed to update grade: " + databaseError.getMessage());
-                }
-            });
-        }
-
-    }
+    private CustomAdapter adapter;
+    private ArrayList<Student> studentList = new ArrayList<>();
+    private ListView listView;
+    private Spinner spinner;
+    private ArrayList<String> gradeList = new ArrayList<>();
+    private DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
-        DatabaseReference myRef = database.getReference("students");
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enroll_student);
 
-        listView = (ListView) findViewById(R.id.listView);
-        gradeList = new ArrayList<>();
+        listView = findViewById(R.id.listView);
+        spinner = findViewById(R.id.spinner_grade);
 
-        Spinner spinner = findViewById(R.id.spinner_grade);
+        database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/")
+                .getReference();
+
+        adapter = new CustomAdapter(this, studentList);
+        listView.setAdapter(adapter);
+        Button btnAdd = findViewById(R.id.btnRemove);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                add(v); // call your existing method
+            }
+        });
+
+        loadGrades();
+        setupSpinnerListener();
+    }
+
+    private void loadGrades() {
+        database.child("Classes").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                gradeList.clear();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    String grade = snap.child("grade").getValue(String.class);
+                    if (grade != null) {
+                        gradeList.add(grade);
+                    }
+                }
+
+                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(EnrolStudentActivity.this,
+                        android.R.layout.simple_spinner_item, gradeList);
+                gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(gradeAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("Firebase", "loadGrades:onCancelled", error.toException());
+            }
+        });
+    }
+
+    private void setupSpinnerListener() {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String grade = (String) parent.getItemAtPosition(position);
-                myRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        studentToDisplay.clear();
-                        for(DataSnapshot child: dataSnapshot.getChildren()){
-                            String stdName = child.child("name").getValue(String.class);
-                            Boolean assigned = child.child("assigned").getValue(Boolean.class);
-                            String stdID = child.child("studentID").getValue(String.class);
-                            String grade = child.child("grade").getValue(String.class);
-
-                            if (assigned != null && !assigned && grade != null &&
-                                    grade.equals(spinner.getSelectedItem().toString())) {
-                                studentToDisplay.add(new Student(stdName, assigned, stdID));
-                            }
-
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        // Failed to read value
-                        Log.w(TAG, "Failed to read value.", error.toException());
-                    }
-                });
+                String selectedGrade = gradeList.get(position);
+                loadStudentsByGrade(selectedGrade);
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
 
-        DatabaseReference gradeRef = database.getReference("Classes");
-
-        gradeRef.addValueEventListener(new ValueEventListener() {
+    private void loadStudentsByGrade(String grade) {
+        database.child("students").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                gradeList.clear();
-                Spinner spinner = findViewById(R.id.spinner_grade);
-                // Iterate through the database snapshot
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String grade = snapshot.child("grade").getValue(String.class);
-                    gradeList.add(grade);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                studentList.clear();
+                Log.d("FirebaseDebug", "Snapshot children count: " + snapshot.getChildrenCount());
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String stdGrade = child.child("grade").getValue(String.class);
+                    Boolean assigned = child.child("assigned").getValue(Boolean.class);
+                    String name = child.child("name").getValue(String.class);
+                    String id = child.child("studentID").getValue(String.class);
+
+                    System.out.println("Student: " + name + ", Grade: " + stdGrade + ", Assigned: " + assigned);
+
+                    if (stdGrade != null && stdGrade.equals(grade) &&
+                            (assigned == null || !assigned)) {
+                        studentList.add(new Student(name, false, id));
+                    }
                 }
 
-                // Update the spinner adapter
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(EnrolStudentActivity.this,
-                        android.R.layout.simple_spinner_item, gradeList);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(adapter);
-            }
+                System.out.println("Students found for grade: " + grade + ", Count: " + studentList.size());
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle database error
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
-            }
-        });
-
-        adapter = new CustomAdapter(studentToDisplay, getApplicationContext());
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-                Student Student= (Student) studentToDisplay.get(position);
-                Student.setAssigned(!Student.getAssigned());
                 adapter.notifyDataSetChanged();
             }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FirebaseDebug", "loadStudents:onCancelled", error.toException());
+            }
         });
+    }
 
 
+    public void add(View view) {
+        ArrayList<String> selectedIDs = adapter.getCheckedIDs();
+        String selectedGrade = spinner.getSelectedItem().toString();
 
+        for (String id : selectedIDs) {
+            database.child("students").child(id).child("assigned").setValue(true);
+            database.child("students").child(id).child("approved").setValue(false);
+        }
+        loadStudentsByGrade(selectedGrade);
     }
 }

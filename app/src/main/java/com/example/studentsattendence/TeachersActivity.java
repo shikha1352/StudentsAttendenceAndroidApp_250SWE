@@ -40,8 +40,8 @@ public class TeachersActivity extends AppCompatActivity {
         enrollStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(TeachersActivity.this, "Mark Attendence button clicked!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(), EnrolStudentActivity.class);
+               // Toast.makeText(TeachersActivity.this, "Mark Attendence button clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(),EnrolStudentActivity.class);
                 v.getContext().startActivity(intent);
             }
         });

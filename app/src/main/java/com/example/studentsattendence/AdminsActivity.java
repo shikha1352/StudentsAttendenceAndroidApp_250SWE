@@ -76,7 +76,7 @@ public class AdminsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(AdminsActivity.this, "approve add student button clicked!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(), AdminsActivity.class);
+                Intent intent = new Intent(v.getContext(), AddApproveStudentActivityAdmin.class);
                 v.getContext().startActivity(intent);
             }
         });
