@@ -70,6 +70,25 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
+        TextView forgotPasswordText = findViewById(R.id.forgotPasswordText);
+
+        forgotPasswordText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = login_email.getText().toString().trim();
+                if (email.isEmpty()) {
+                    login_email.setError("Enter your email to reset password");
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    login_email.setError("Enter a valid email");
+                } else {
+                    auth.sendPasswordResetEmail(email)
+                            .addOnSuccessListener(unused ->
+                                    Toast.makeText(LoginActivity.this, "Reset link sent to your email", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(LoginActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
 
         signupRedirectText.setOnClickListener(new View.OnClickListener() {
             @Override
