@@ -30,6 +30,7 @@
         <activity android:name=".SignInActivity" android:exported="true" />
         <activity android:name=".AdminsActivity" android:exported="true" />
         <activity android:name=".TeachersActivity" android:exported="true" />
+        <activity android:name=".ParentActivity" android:exported="true" />
         <activity android:name=".CreateClassActivity" android:exported="true"/>
         <activity android:name=".AddTeacherActivity" android:exported="true"/>
         <activity android:name=".AddStudentActivity" android:exported="true"/>
