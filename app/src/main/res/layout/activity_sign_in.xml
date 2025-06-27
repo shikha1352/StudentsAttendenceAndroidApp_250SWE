@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,8 +10,6 @@
     android:padding="15dp"
     android:background="#FFFFFF"
     tools:context=".SignInActivity">
-
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
@@ -43,11 +40,9 @@
         android:topRightRadius="15dp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         tools:ignore="MissingConstraints" />
-
     <EditText
         android:id="@+id/signup_password"
         android:layout_width="300dp"
@@ -66,7 +61,7 @@
         android:topLeftRadius="15dp"
         android:topRightRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signup_email"
         tools:ignore="MissingConstraints" />

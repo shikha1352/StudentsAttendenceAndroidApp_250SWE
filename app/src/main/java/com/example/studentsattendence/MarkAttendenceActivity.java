@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.graphics.Paint;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
+
 
 
 
@@ -28,14 +30,31 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MarkAttendenceActivity extends AppCompatActivity {
 
@@ -120,8 +139,9 @@ public class MarkAttendenceActivity extends AppCompatActivity {
                     String name = child.child("name").getValue(String.class);
                     String id = child.child("studentID").getValue(String.class);
                     String grade = child.child("grade").getValue(String.class);
+                    boolean approve = child.child("approved").getValue(Boolean.class);
 
-                    if (grade != null && grade.equals(teacherGrade)) {
+                    if (grade != null && grade.equals(teacherGrade) && approve==true) {
                         studentToDisplay.add(new Student(name, id));
                         allStudents.add(id);
                     }
@@ -153,6 +173,7 @@ public class MarkAttendenceActivity extends AppCompatActivity {
                                 String studentKey = snapshot.getKey();
                                 DatabaseReference attendanceRef = myRef.child(studentKey).child("attendance").child(currentDate);
                                 attendanceRef.setValue(isPresent);
+
                             }
                         }
 
@@ -163,6 +184,7 @@ public class MarkAttendenceActivity extends AppCompatActivity {
                     });
         }
     }
+
 
     private String getCurrentDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -182,31 +204,50 @@ public class MarkAttendenceActivity extends AppCompatActivity {
                         Canvas canvas = page.getCanvas();
 
                         int y = 50;
+                        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
                         paint.setTextSize(18);
-                        canvas.drawText("Student Attendance Report", 180, y, paint);
+                        canvas.drawText("Student Attendance Report", 150, y, paint);
                         y += 40;
 
+                        // Table Header
                         paint.setTextSize(14);
+                        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+                        canvas.drawText("Student Name", 50, y, paint);
+                        canvas.drawText("Absent", 220, y, paint);
+                        canvas.drawText("Present", 300, y, paint);
+                        canvas.drawText("Present %", 400, y, paint);
+                        y += 25;
+
+                        paint.setTypeface(Typeface.DEFAULT);
 
                         for (DataSnapshot studentSnap : dataSnapshot.getChildren()) {
                             String name = studentSnap.child("name").getValue(String.class);
-                            String id = studentSnap.child("studentID").getValue(String.class);
+                            if (name == null) name = "N/A";
                             DataSnapshot attendanceSnap = studentSnap.child("attendance");
 
                             int total = 0, present = 0;
                             for (DataSnapshot daySnap : attendanceSnap.getChildren()) {
                                 total++;
-                                if (Boolean.TRUE.equals(daySnap.getValue(Boolean.class))) {
-                                    present++;
+
+                                Object value = daySnap.getValue();
+
+                                if (value instanceof Boolean) {
+                                    if ((Boolean) value) {
+                                        present++; // true = present
+                                    }
                                 }
                             }
 
+                            int absent = total - present;
                             int percent = (total > 0) ? (present * 100 / total) : 0;
-                            String line = name + " (" + id + ") - " + percent + "%";
-                            canvas.drawText(line, 50, y, paint);
+
+                            canvas.drawText(name, 50, y, paint);
+                            canvas.drawText(String.valueOf(absent), 220, y, paint);
+                            canvas.drawText(String.valueOf(present), 300, y, paint);
+                            canvas.drawText(percent + "%", 400, y, paint);
                             y += 20;
 
-                            // Page limit logic
+                            // Handle page overflow
                             if (y > 800) {
                                 document.finishPage(page);
                                 page = document.startPage(pageInfo);
@@ -225,12 +266,11 @@ public class MarkAttendenceActivity extends AppCompatActivity {
                             Intent intent = new Intent(Intent.ACTION_VIEW);
                             intent.setDataAndType(FileProvider.getUriForFile(
                                             MarkAttendenceActivity.this,
-                                            getApplicationContext().getPackageName() + ".provider", // must match authority in manifest
+                                            getApplicationContext().getPackageName() + ".provider",
                                             filePath),
                                     "application/pdf");
 
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
                             try {
                                 startActivity(intent);
                             } catch (ActivityNotFoundException e) {
@@ -247,8 +287,12 @@ public class MarkAttendenceActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError error) {
                         Log.e("PDF", "Error reading student data", error.toException());
                     }
+
                 });
+
     }
 
-
 }
+
+
+

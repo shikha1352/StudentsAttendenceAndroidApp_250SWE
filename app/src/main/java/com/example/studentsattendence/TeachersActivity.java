@@ -37,6 +37,7 @@ public class TeachersActivity extends AppCompatActivity {
         CardView markAttendance = findViewById(R.id.markAttendance);
         CardView removeStudent= findViewById(R.id.removeStudent);
 
+
         enrollStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,6 +64,7 @@ public class TeachersActivity extends AppCompatActivity {
                 v.getContext().startActivity(intent);
             }
         });
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();

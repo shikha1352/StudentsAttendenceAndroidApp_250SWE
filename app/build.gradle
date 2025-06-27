@@ -48,5 +48,9 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     implementation 'com.itextpdf:itext7-core:7.1.15' // or latest
+    implementation 'com.google.firebase:firebase-messaging:23.4.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
+
 
 }

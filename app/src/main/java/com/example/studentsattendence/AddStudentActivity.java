@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -143,8 +144,6 @@ public class AddStudentActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
     }
-
-
     private byte[] getBytesFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -200,18 +199,30 @@ public class AddStudentActivity extends AppCompatActivity {
 
         Map<String, Object> studentData = new HashMap<>();
 
-        DatabaseReference userRef = database.getReference().child("users").child(userID); // Retrieve the correct user reference
+        // Retrieve the correct user reference
 
 
         // Create a unique key for the student in the database
         String studentId = studentRef.getKey();
 
+
+        DatabaseReference userRef = database.getReference().child("users").child(userID);
         userRef.child("studentID").setValue(studentId);
         userRef.child("name").setValue(guardianName);
         userRef.child("address").setValue(guardianAddress);
         userRef.child("email").setValue(email);
         userRef.child("mobile").setValue(guardianMobile);
         userRef.child("role").setValue("parent");
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String token = task.getResult();
+                        userRef.child("token").setValue(token);
+                    } else {
+                        Log.e("FCMToken", "Failed to get token", task.getException());
+                    }
+                });
 
         studentData.put("name", stdName);
         studentData.put("address", address);

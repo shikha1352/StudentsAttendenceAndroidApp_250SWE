@@ -58,7 +58,7 @@ public class AdminsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(AdminsActivity.this, "remove student button clicked!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(), AdminsActivity.class);
+                Intent intent = new Intent(v.getContext(), RemoveStudentActivityAdmin.class);
                 v.getContext().startActivity(intent);
             }
         });
@@ -85,7 +85,7 @@ public class AdminsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(AdminsActivity.this, "approve remove student button clicked!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(),RemoveStudentActivityAdmin.class);
+                Intent intent = new Intent(v.getContext(),RemoveApproveStudentActivityAdmin.class);
                 v.getContext().startActivity(intent);
             }
         });
