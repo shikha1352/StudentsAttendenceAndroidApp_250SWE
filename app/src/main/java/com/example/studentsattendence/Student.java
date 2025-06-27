@@ -13,7 +13,6 @@ public class Student {
         this.studentID = studentID;
     }
 
-    // New constructor to use in MarkAttendanceActivity
     public Student(String name, String studentID) {
         this.name = name;
         this.studentID = studentID;

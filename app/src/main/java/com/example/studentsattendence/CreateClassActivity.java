@@ -60,7 +60,7 @@ public class CreateClassActivity extends AppCompatActivity {
                         // Record added successfully
                         Log.d("Firebase", "Record added successfully!");
                         Toast.makeText(CreateClassActivity.this, "Teacher is added successfully", Toast.LENGTH_SHORT).show();
-                        clearForm();
+                        gradeName.setText("");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -71,9 +71,5 @@ public class CreateClassActivity extends AppCompatActivity {
                         Toast.makeText(CreateClassActivity.this, "Adding class failed", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void clearForm() {
-        gradeName.setText("");
     }
 }

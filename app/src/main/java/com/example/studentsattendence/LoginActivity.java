@@ -48,7 +48,8 @@ public class LoginActivity extends AppCompatActivity {
                             public void onSuccess(AuthResult authResult) {
 
                                 Toast.makeText(LoginActivity.this,"Login Successful",Toast.LENGTH_SHORT).show();
-                                launchMainActivity();
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -98,11 +99,5 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         });
-    }
-
-    private void launchMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish(); // Optional: finish LoginActivity to prevent going back to it
     }
 }

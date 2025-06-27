@@ -30,31 +30,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
-
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class MarkAttendenceActivity extends AppCompatActivity {
 
@@ -87,7 +71,6 @@ public class MarkAttendenceActivity extends AppCompatActivity {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             userId = firebaseUser.getUid();
-
 
             DatabaseReference userRef = database.getReference("users").child(userId);
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -124,8 +107,6 @@ public class MarkAttendenceActivity extends AppCompatActivity {
         findViewById(R.id.btn_generate_pdf).setOnClickListener(v -> {
             generateAttendancePdf();
         });
-
-
     }
 
     private void loadStudentsByGrade() {

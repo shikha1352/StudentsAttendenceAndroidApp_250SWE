@@ -42,7 +42,6 @@ import java.util.Map;
 
 public class AddStudentActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int REQUEST_IMAGE_CAPTURE = 2;
 
     private EditText editTextName, editTextAddress, editTextFatherName, editTextFatherMobile, editTextFatherOccupation;
     private EditText editTextFatherEmail,editTextMotherEmail, editTextMotherName, editTextMotherMobile, editTextMotherOccupation;
@@ -139,36 +138,21 @@ public class AddStudentActivity extends AppCompatActivity {
     }
 
     private void openImageChooser() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
-    }
-    private byte[] getBytesFromBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        return baos.toByteArray();
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
-        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            imageUri = getImageUri(imageBitmap);
+            // You can now display or upload this URI
         }
     }
 
-    private Uri getImageUri(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Image", null);
-        return Uri.parse(path);
-    }
 
     private void saveStudent() {
         // Get the entered student information
@@ -199,12 +183,8 @@ public class AddStudentActivity extends AppCompatActivity {
 
         Map<String, Object> studentData = new HashMap<>();
 
-        // Retrieve the correct user reference
-
-
         // Create a unique key for the student in the database
         String studentId = studentRef.getKey();
-
 
         DatabaseReference userRef = database.getReference().child("users").child(userID);
         userRef.child("studentID").setValue(studentId);

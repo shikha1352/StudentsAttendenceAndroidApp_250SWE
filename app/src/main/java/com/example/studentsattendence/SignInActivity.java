@@ -20,21 +20,19 @@ public class SignInActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private EditText signup_email,signup_password;
-    private Button sign_in_button;
+    private Button sign_up_button;
     private TextView loginRedirectText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-
         auth = FirebaseAuth.getInstance();
         signup_email = findViewById(R.id.signup_email);
         signup_password = findViewById(R.id.signup_password);
-        sign_in_button = findViewById(R.id.sign_in_button);
+        sign_up_button = findViewById(R.id.sign_in_button);
         loginRedirectText = findViewById(R.id.loginRedirectText);
-
-        sign_in_button.setOnClickListener(new View.OnClickListener() {
+        sign_up_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String user = signup_email.getText().toString().trim();

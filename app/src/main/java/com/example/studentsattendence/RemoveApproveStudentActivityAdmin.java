@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class RemoveStudentActivityAdmin extends AppCompatActivity {
+public class RemoveApproveStudentActivityAdmin extends AppCompatActivity {
 
     private CustomAdapter adapter;
     private ArrayList<Student> studentList = new ArrayList<>();
@@ -68,7 +68,7 @@ public class RemoveStudentActivityAdmin extends AppCompatActivity {
                     }
                 }
 
-                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(RemoveStudentActivityAdmin.this,
+                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(RemoveApproveStudentActivityAdmin.this,
                         android.R.layout.simple_spinner_item, gradeList);
                 gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(gradeAdapter);
@@ -106,7 +106,7 @@ public class RemoveStudentActivityAdmin extends AppCompatActivity {
                     String name = child.child("name").getValue(String.class);
                     String id = child.child("studentID").getValue(String.class);
 
-                    if(currentStudent && assigned != null && assigned == false && grade.equals(spinner.getSelectedItem().toString())){
+                    if(currentStudent && assigned != null && assigned == true && grade.equals(spinner.getSelectedItem().toString())){
                         studentList.add(new Student(name,assigned,id));
                     }
                 }
@@ -131,5 +131,6 @@ public class RemoveStudentActivityAdmin extends AppCompatActivity {
             database.child("students").child(id).child("approved").setValue(true);
         }
 
+        loadStudentsByGrade(selectedGrade);
     }
 }
