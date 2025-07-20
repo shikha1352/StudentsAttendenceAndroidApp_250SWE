@@ -58,7 +58,7 @@ public class ParentNotesActivity extends AppCompatActivity {
     private String userId, teacherName, teacherGrade;
     private TextView nameLabel, gradeLabel, dateLabel,teacherNameLabel;
     private EditText textReason;
-    private ArrayList<String > presentStudents;
+
     private ArrayList<String > allStudents;
     private FirebaseDatabase database;
 
@@ -162,8 +162,6 @@ public class ParentNotesActivity extends AppCompatActivity {
     }
 
     private void searchStudent(String studentID) {
-        System.out.println("Ahhhhhh");
-        System.out.println(studentID);
         myRef = database.getReference("students");
         Query query = myRef.orderByChild("studentID").equalTo(studentID);
         query.addListenerForSingleValueEvent(new ValueEventListener() {

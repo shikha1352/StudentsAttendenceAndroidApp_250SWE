@@ -24,13 +24,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class AddApproveStudentActivityAdmin extends AppCompatActivity {
-
     private CustomAdapter adapter;
     private ArrayList<Student> studentToDisplay;
     private ArrayList<String> gradeList;
     private ListView listView;
     private Spinner spinner;
-
     private DatabaseReference studentsRef;
     private DatabaseReference gradesRef;
 
@@ -94,7 +92,6 @@ public class AddApproveStudentActivityAdmin extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
-
     private void loadUnapprovedStudents(String grade) {
         studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

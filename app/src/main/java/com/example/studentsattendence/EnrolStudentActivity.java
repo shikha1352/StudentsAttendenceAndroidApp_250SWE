@@ -101,17 +101,17 @@ public class EnrolStudentActivity extends AppCompatActivity {
                 for (DataSnapshot child : snapshot.getChildren()) {
                     String stdGrade = child.child("grade").getValue(String.class);
                     Boolean assigned = child.child("assigned").getValue(Boolean.class);
+                    Boolean currentStudent = child.child("currentStudent").getValue(Boolean.class);
                     String name = child.child("name").getValue(String.class);
                     String id = child.child("studentID").getValue(String.class);
 
                     System.out.println("Student: " + name + ", Grade: " + stdGrade + ", Assigned: " + assigned);
 
                     if (stdGrade != null && stdGrade.equals(grade) &&
-                            (assigned == null || !assigned)) {
+                            currentStudent && (assigned == null || !assigned )) {
                         studentList.add(new Student(name, false, id));
                     }
                 }
-
                 System.out.println("Students found for grade: " + grade + ", Count: " + studentList.size());
 
                 adapter.notifyDataSetChanged();
@@ -127,12 +127,12 @@ public class EnrolStudentActivity extends AppCompatActivity {
 
     public void add(View view) {
         ArrayList<String> selectedIDs = adapter.getCheckedIDs();
-        String selectedGrade = spinner.getSelectedItem().toString();
 
         for (String id : selectedIDs) {
             database.child("students").child(id).child("assigned").setValue(true);
             database.child("students").child(id).child("approved").setValue(false);
         }
+        String selectedGrade = spinner.getSelectedItem().toString();
         loadStudentsByGrade(selectedGrade);
     }
 }

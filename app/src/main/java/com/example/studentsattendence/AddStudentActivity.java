@@ -149,7 +149,7 @@ public class AddStudentActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
-            // You can now display or upload this URI
+
         }
     }
 
@@ -185,7 +185,6 @@ public class AddStudentActivity extends AppCompatActivity {
 
         // Create a unique key for the student in the database
         String studentId = studentRef.getKey();
-
         DatabaseReference userRef = database.getReference().child("users").child(userID);
         userRef.child("studentID").setValue(studentId);
         userRef.child("name").setValue(guardianName);
@@ -226,7 +225,7 @@ public class AddStudentActivity extends AppCompatActivity {
         studentData.put("studentID", studentId);
         studentData.put("currentStudent", true);
         studentData.put("assigned", false);
-        studentData.put("approve", false);
+        studentData.put("approved", false);
         studentData.put("grade", "");
 
         if (imageUri != null) {
@@ -259,12 +258,12 @@ public class AddStudentActivity extends AppCompatActivity {
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // Image upload successful
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                // Image upload failed
+
             }
         });
     }

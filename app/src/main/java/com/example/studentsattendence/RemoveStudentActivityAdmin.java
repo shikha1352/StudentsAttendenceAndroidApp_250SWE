@@ -106,8 +106,8 @@ public class RemoveStudentActivityAdmin extends AppCompatActivity {
                     String name = child.child("name").getValue(String.class);
                     String id = child.child("studentID").getValue(String.class);
 
-                    if(currentStudent && assigned != null && assigned == false && grade.equals(spinner.getSelectedItem().toString())){
-                        studentList.add(new Student(name,assigned,id));
+                    if(currentStudent && stdGrade.equals(grade)){
+                        studentList.add(new Student(name,false,id));
                     }
                 }
 
@@ -123,13 +123,14 @@ public class RemoveStudentActivityAdmin extends AppCompatActivity {
 
     public void removeStudents(View view) {
         ArrayList<String> selectedIDs = adapter.getCheckedIDs();
-        String selectedGrade = spinner.getSelectedItem().toString();
 
         for (String id : selectedIDs) {
             database.child("students").child(id).child("currentStudent").setValue(false);
             database.child("students").child(id).child("assigned").setValue(false);
-            database.child("students").child(id).child("approved").setValue(true);
+            database.child("students").child(id).child("approved").setValue(false);
         }
+        String selectedGrade = spinner.getSelectedItem().toString();
+        loadStudentsByGrade(selectedGrade);
 
     }
 }

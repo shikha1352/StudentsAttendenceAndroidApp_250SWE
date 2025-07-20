@@ -62,12 +62,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void startAdminActivity() {
         Intent intent = new Intent(this, AdminsActivity.class);
         startActivity(intent);
-
     }
     private void startTeacherActivity() {
         Intent intent = new Intent(this, TeachersActivity.class);

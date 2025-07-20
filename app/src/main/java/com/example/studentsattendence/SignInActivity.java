@@ -45,6 +45,9 @@ public class SignInActivity extends AppCompatActivity {
                 if (pass.isEmpty()){
                     signup_password.setError("Password cannot be empty");
                 }
+                if(pass.length()<8 || !pass.matches(".*[A-Z]*.") || !pass.matches(".*\\d*.") || !pass.matches(".*[!@#$%^&*-+].")){
+                    signup_password.setError("Password should not be less than 8 character and must have one capital letter,one digit and one special character");
+                }
                 else {
                     auth.createUserWithEmailAndPassword(user,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
@@ -52,6 +55,8 @@ public class SignInActivity extends AppCompatActivity {
                             if (task.isSuccessful()){
                                 Toast.makeText(SignInActivity.this,"Signup Successful",Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(SignInActivity.this,LoginActivity.class));
+                                signup_email.setText("");
+                                signup_password.setText("");
                             }
                             else {
                                 Toast.makeText(SignInActivity.this,"Signup Failed"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();

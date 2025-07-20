@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background='@color/white'
     tools:context=".LoginActivity">
 
 
@@ -33,7 +32,6 @@
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:padding="8dp"
-        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
@@ -53,7 +51,6 @@
         android:hint="Password"
         android:inputType="textPassword"
         android:padding="8dp"
-        android:textColor="@color/black"
         android:topLeftRadius="15dp"
         android:topRightRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
