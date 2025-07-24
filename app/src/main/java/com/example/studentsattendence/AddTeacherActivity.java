@@ -16,42 +16,33 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AddTeacherActivity extends AppCompatActivity {
 
-    private EditText editTextName, editTextAddress,editTextMobile,editTextEmail;
+    private EditText editTextName, editTextAddress, editTextMobile;
     private Button buttonSave;
-    private DatabaseReference databaseReference;
-    DatabaseReference userRef;
-    private StorageReference storageReference;
-    private ArrayList<String> gradeList;
-    private HashMap<String,String> userList;
-    private Spinner spinnerGrade,spinnerEmail;
-    private FirebaseDatabase database;
+    private Spinner spinnerGrade, spinnerEmail;
 
+    private FirebaseDatabase database;
+    private HashMap<String, String> userList;
+
+    private GradeLoader gradeLoader;
+    private UserLoader userLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_teacher);
 
-        gradeList = new ArrayList<>();
+        database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com");
         userList = new HashMap<>();
 
-        // Initialize Firebase database
-        database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com");
 
-        // Initialize views
         editTextName = findViewById(R.id.editTextName);
         editTextAddress = findViewById(R.id.editTextAddress);
         editTextMobile = findViewById(R.id.editTextMobile);
@@ -59,72 +50,21 @@ public class AddTeacherActivity extends AppCompatActivity {
         spinnerGrade = findViewById(R.id.spinner_grade);
         spinnerEmail = findViewById(R.id.spinner_email);
 
+
+        gradeLoader = new GradeLoader(database);
+        userLoader = new UserLoader(database);
+
+        gradeLoader.loadGrades(this, spinnerGrade);
+        userLoader.loadUsers(this, spinnerEmail, new UserLoader.UserLoadCallback() {
+            @Override
+            public void onUserMapLoaded(HashMap<String, String> userMap) {
+                userList = userMap;
+            }
+        });
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveTeacher();
-            }
-        });
-
-        loadGrades();
-        loadUsers();
-    }
-
-    private void loadGrades() {
-        DatabaseReference gradeRef = database.getReference("Classes");
-
-        gradeRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                gradeList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String grade = snapshot.child("grade").getValue(String.class);
-                    if (grade != null) {
-                        gradeList.add(grade);
-                    }
-                }
-
-                // Update the spinner
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(AddTeacherActivity.this,
-                        android.R.layout.simple_spinner_item, gradeList);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerGrade.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "Failed to read grades.", databaseError.toException());
-            }
-        });
-    }
-
-    private void loadUsers() {
-        DatabaseReference usersRef = database.getReference("users");
-
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String email = snapshot.child("email").getValue(String.class);
-                    String userID = snapshot.getKey();  // Get Firebase-generated userID
-
-                    if (email != null && userID != null) {
-                        userList.put(email, userID);
-                    }
-                }
-
-                // Update the spinner
-                ArrayList<String> emailList = new ArrayList<>(userList.keySet());
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(AddTeacherActivity.this,
-                        android.R.layout.simple_spinner_item, emailList);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerEmail.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "Failed to read users.", databaseError.toException());
             }
         });
     }
@@ -155,7 +95,7 @@ public class AddTeacherActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("Firebase", "Fields updated successfully!");
+                        Log.d(TAG, "Teacher added successfully!");
                         Toast.makeText(AddTeacherActivity.this, "Teacher added successfully", Toast.LENGTH_SHORT).show();
                         clearForm();
                     }
@@ -163,7 +103,7 @@ public class AddTeacherActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("Firebase", "Error updating fields: " + e.getMessage());
+                        Log.e(TAG, "Error updating fields: " + e.getMessage());
                         Toast.makeText(AddTeacherActivity.this, "Adding teacher failed", Toast.LENGTH_SHORT).show();
                     }
                 });

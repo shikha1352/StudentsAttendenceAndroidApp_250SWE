@@ -1,5 +1,7 @@
 package com.example.studentsattendence;
 
+import com.google.firebase.database.DataSnapshot;
+
 public class Student {
     private String name;
     private boolean assigned;
@@ -37,5 +39,24 @@ public class Student {
 
     public boolean getAssigned() {
         return assigned;
+    }
+
+
+    public static Student fromSnapshot(DataSnapshot snapshot) {
+        String name = snapshot.child("name").getValue(String.class);
+        String id = snapshot.child("studentID").getValue(String.class);
+        return new Student(name, false, id);
+    }
+
+
+    public static boolean isEligible(DataSnapshot snapshot, String gradeFilter) {
+        String grade = snapshot.child("grade").getValue(String.class);
+        Boolean assigned = snapshot.child("assigned").getValue(Boolean.class);
+        Boolean currentStudent = snapshot.child("currentStudent").getValue(Boolean.class);
+
+        return grade != null &&
+                grade.equals(gradeFilter) &&
+                Boolean.TRUE.equals(currentStudent) &&
+                (assigned == null || !assigned);
     }
 }

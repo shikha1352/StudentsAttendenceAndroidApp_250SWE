@@ -38,217 +38,73 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MarkAttendenceActivity extends AppCompatActivity {
-
-    private CustomAdapter adapter;
-    private ArrayList<Student> studentToDisplay = new ArrayList<>();
-    private ArrayList<String> allStudents = new ArrayList<>();
-    private ArrayList<String> presentStudents;
     private ListView listView;
-    private TextView nameLabel, gradeLabel;
+    private CustomAdapter adapter;
+    private ArrayList<Student> studentList = new ArrayList<>();
+    private ArrayList<String> presentIDs;
+    private FirebaseDatabase db;
+    private String teacherGrade, teacherName, userId, currentDate;
 
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
-    private String userId, teacherName, teacherGrade;
-    private String currentDate;
+    private StudentRipository studentRepo;
+    private AttendanceReportGenerator reportGenerator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mark_attendence);
-        currentDate = getCurrentDate();
-        database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
-        myRef = database.getReference("students");
-        nameLabel = findViewById(R.id.label_teacher);
-        gradeLabel = findViewById(R.id.label_grade);
+
+        db = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/");
+        studentRepo = new StudentRipository(db);
+
+
         listView = findViewById(R.id.listView);
-        // Get teacher info
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            userId = firebaseUser.getUid();
-            DatabaseReference userRef = database.getReference("users").child(userId);
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        teacherName = snapshot.child("name").getValue(String.class);
-                        teacherGrade = snapshot.child("grade").getValue(String.class);
-                        nameLabel.setText("Teacher : " + teacherName);
-                        gradeLabel.setText("Grade : " + teacherGrade);
-                        loadStudentsByGrade(); // Now fetch students
-                    } else {
-                        Log.e("TAG", "No user data found for ID: " + userId);
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    Log.e("TAG", "Error fetching teacher data", error.toException());
-                }
-            });
-        }
-        // Handle checkbox toggle
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Student student = studentToDisplay.get(position);
-            student.setAssigned(!student.getAssigned());
-            adapter.notifyDataSetChanged();
-        });
+        currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-        findViewById(R.id.btn_generate_pdf).setOnClickListener(v -> {
-            generateAttendancePdf();
-        });
-    }
-
-    private void loadStudentsByGrade() {
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                studentToDisplay.clear();
-                allStudents.clear();
-
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    String name = child.child("name").getValue(String.class);
-                    String id = child.child("studentID").getValue(String.class);
-                    String grade = child.child("grade").getValue(String.class);
-                    Boolean approve = child.child("approved").getValue(Boolean.class);
-                    Boolean assigned = child.child("assigned").getValue(Boolean.class);
-                    if (approve == null || assigned==null ) {
-                        approve = false;
-                        assigned=false;
-                    }
-                    if (grade != null && grade.equals(teacherGrade) && approve && assigned) {
-                        studentToDisplay.add(new Student(name, id));
-                        allStudents.add(id);
-                    }
-                }
-
-                // Set adapter after loading data
-                adapter = new CustomAdapter(MarkAttendenceActivity.this, studentToDisplay);
-                listView.setAdapter(adapter);
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w("TAG", "Failed to read student data", error.toException());
-            }
-        });
-    }
-
-    public void submit(View view) {
-        presentStudents = adapter.getCheckedIDs();
-
-        for (String stdID : allStudents) {
-            boolean isPresent = presentStudents.contains(stdID);
-
-            myRef.orderByChild("studentID").equalTo(stdID)
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+            db.getReference("users").child(userId)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                String studentKey = snapshot.getKey();
-                                DatabaseReference attendanceRef = myRef.child(studentKey).child("attendance").child(currentDate);
-                                attendanceRef.setValue(isPresent);
-
-                            }
+                        public void onDataChange(DataSnapshot snapshot) {
+                            teacherName = snapshot.child("name").getValue(String.class);
+                            teacherGrade = snapshot.child("grade").getValue(String.class);
+                            loadStudents();
                         }
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            Log.e("TAG", "Error writing attendance", error.toException());
-                        }
+                        public void onCancelled(DatabaseError error) {}
                     });
         }
-    }
-    private String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        return sdf.format(new Date());
-    }
-    private void generateAttendancePdf() {
-        DatabaseReference studentsRef = database.getReference("students");
-        studentsRef.orderByChild("grade").equalTo(teacherGrade)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        PdfDocument document = new PdfDocument();
-                        Paint paint = new Paint();
-                        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
-                        PdfDocument.Page page = document.startPage(pageInfo);
-                        Canvas canvas = page.getCanvas();
-                        int y = 50;
-                        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                        paint.setTextSize(18);
-                        canvas.drawText("Student Attendance Report", 150, y, paint);
-                        y += 40;
-                        // Table Header
-                        paint.setTextSize(14);
-                        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                        canvas.drawText("Student Name", 50, y, paint);
-                        canvas.drawText("Absent", 220, y, paint);
-                        canvas.drawText("Present", 300, y, paint);
-                        canvas.drawText("Present %", 400, y, paint);
-                        y += 25;
-                        paint.setTypeface(Typeface.DEFAULT);
-                        for (DataSnapshot studentSnap : dataSnapshot.getChildren()) {
-                            String name = studentSnap.child("name").getValue(String.class);
-                            if (name == null) name = "N/A";
-                            DataSnapshot attendanceSnap = studentSnap.child("attendance");
+        reportGenerator = new AttendanceReportGenerator(this, db);
+        findViewById(R.id.btn_generate_pdf).setOnClickListener(v -> {
+            reportGenerator.generate(teacherGrade);
+        });
 
-                            int total = 0, present = 0;
-                            for (DataSnapshot daySnap : attendanceSnap.getChildren()) {
-                                total++;
-
-                                Object value = daySnap.getValue();
-
-                                if (value instanceof Boolean) {
-                                    if ((Boolean) value) {
-                                        present++; // true = present
-                                    }
-                                }
-                            }
-                            int absent = total - present;
-                            int percent = (total > 0) ? (present * 100 / total) : 0;
-                            canvas.drawText(name, 50, y, paint);
-                            canvas.drawText(String.valueOf(absent), 220, y, paint);
-                            canvas.drawText(String.valueOf(present), 300, y, paint);
-                            canvas.drawText(percent + "%", 400, y, paint);
-                            y += 20;
-                            // Handle page overflow
-                            if (y > 800) {
-                                document.finishPage(page);
-                                page = document.startPage(pageInfo);
-                                canvas = page.getCanvas();
-                                y = 50;
-                            }
-                        }
-                        document.finishPage(page);
-                        File filePath = new File(getExternalFilesDir(null), "AttendanceReport.pdf");
-                        try {
-                            document.writeTo(new FileOutputStream(filePath));
-                            Toast.makeText(MarkAttendenceActivity.this, "Opening PDF...", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setDataAndType(FileProvider.getUriForFile(
-                                            MarkAttendenceActivity.this,
-                                            getApplicationContext().getPackageName() + ".provider",
-                                            filePath),
-                                    "application/pdf");
-
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            try {
-                                startActivity(intent);
-                            } catch (ActivityNotFoundException e) {
-                                Toast.makeText(MarkAttendenceActivity.this, "No PDF viewer installed.", Toast.LENGTH_LONG).show();
-                            }
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        document.close();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        Log.e("PDF", "Error reading student data", error.toException());
-                    }
-
-                });
-
+        listView.setOnItemClickListener((parent, view, pos, id) -> {
+            Student s = studentList.get(pos);
+            s.setAssigned(!s.getAssigned());
+            adapter.notifyDataSetChanged();
+        });
     }
 
+    private void loadStudents() {
+        studentRepo.getStudentsByGrade(teacherGrade, new StudentRipository.StudentLoadCallback() {
+            public void onStudentsLoaded(ArrayList<Student> students) {
+                studentList.clear();
+                studentList.addAll(students);
+                adapter = new CustomAdapter(MarkAttendenceActivity.this, studentList);
+                listView.setAdapter(adapter);
+            }
+            public void onError(Exception e) {
+                Toast.makeText(MarkAttendenceActivity.this, "Error loading students", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void submit(View v) {
+        presentIDs = adapter.getCheckedIDs();
+        for (Student s : studentList) {
+            boolean present = presentIDs.contains(s.getId());
+            studentRepo.updateAttendance(s.getId(), currentDate, present);
+        }
+    }
 }
+

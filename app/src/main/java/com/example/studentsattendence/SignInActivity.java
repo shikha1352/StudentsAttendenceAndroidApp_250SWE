@@ -17,12 +17,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignInActivity extends AppCompatActivity {
-
     private FirebaseAuth auth;
     private EditText signup_email,signup_password;
     private Button sign_up_button;
     private TextView loginRedirectText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +61,6 @@ public class SignInActivity extends AppCompatActivity {
                             }
                         }
                     });
-
                 }
             }
         });

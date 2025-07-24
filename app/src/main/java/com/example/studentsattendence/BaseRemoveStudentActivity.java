@@ -20,35 +20,32 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class EnrolStudentActivity extends AppCompatActivity {
+public abstract class BaseRemoveStudentActivity extends AppCompatActivity {
 
-    private CustomAdapter adapter;
-    private ArrayList<Student> studentList = new ArrayList<>();
-    private ListView listView;
-    private Spinner spinner;
-    private ArrayList<String> gradeList = new ArrayList<>();
-    private DatabaseReference database;
+    protected CustomAdapter adapter;
+    protected ArrayList<Student> studentList = new ArrayList<>();
+    protected ListView listView;
+    protected Spinner spinner;
+    protected ArrayList<String> gradeList = new ArrayList<>();
+    protected DatabaseReference database;
+    protected Button btnRemove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enroll_student);
+        setContentView(getLayoutId());
 
         listView = findViewById(R.id.listView);
         spinner = findViewById(R.id.spinner_grade);
+        btnRemove = findViewById(R.id.btnRemove);
 
         database = FirebaseDatabase.getInstance("https://students-attendence-5aff8-default-rtdb.firebaseio.com/")
                 .getReference();
 
         adapter = new CustomAdapter(this, studentList);
         listView.setAdapter(adapter);
-        Button btnAdd = findViewById(R.id.btnRemove);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                add(v); // call your existing method
-            }
-        });
+
+        btnRemove.setOnClickListener(v -> removeStudents());
 
         loadGrades();
         setupSpinnerListener();
@@ -66,7 +63,7 @@ public class EnrolStudentActivity extends AppCompatActivity {
                     }
                 }
 
-                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(EnrolStudentActivity.this,
+                ArrayAdapter<String> gradeAdapter = new ArrayAdapter<>(BaseRemoveStudentActivity.this,
                         android.R.layout.simple_spinner_item, gradeList);
                 gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(gradeAdapter);
@@ -92,38 +89,8 @@ public class EnrolStudentActivity extends AppCompatActivity {
         });
     }
 
-    private void loadStudentsByGrade(String grade) {
-        database.child("students").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                studentList.clear();
-                Log.d("FirebaseDebug", "Snapshot children count: " + snapshot.getChildrenCount());
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    if (Student.isEligible(child, grade)) {
-                        studentList.add(Student.fromSnapshot(child));
-                    }
-                }
-                System.out.println("Students found for grade: " + grade + ", Count: " + studentList.size());
-
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("FirebaseDebug", "loadStudents:onCancelled", error.toException());
-            }
-        });
-    }
-
-
-    public void add(View view) {
-        ArrayList<String> selectedIDs = adapter.getCheckedIDs();
-
-        for (String id : selectedIDs) {
-            database.child("students").child(id).child("assigned").setValue(true);
-            database.child("students").child(id).child("approved").setValue(false);
-        }
-        String selectedGrade = spinner.getSelectedItem().toString();
-        loadStudentsByGrade(selectedGrade);
-    }
+    // Abstract methods for subclass-specific behavior
+    protected abstract int getLayoutId();
+    protected abstract void loadStudentsByGrade(String grade);
+    protected abstract void removeStudents();
 }

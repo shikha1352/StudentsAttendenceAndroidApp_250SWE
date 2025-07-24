@@ -2,6 +2,7 @@ package com.example.studentsattendence;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -187,6 +188,9 @@ public class ParentNotesActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
     }
+
+
+
+
 }
